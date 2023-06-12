@@ -1,0 +1,11 @@
+
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+    "title":"AlpArslan",
+    "likes":22,
+    "author":"riza",
+    "url":"asdasd.asd/sadas/da/sd/asd"
+
+}
