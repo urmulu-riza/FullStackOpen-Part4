@@ -1,3 +1,3 @@
 const dummy = (blogs) => 1;
-
-module.exports = { dummy };
+const totalLikes = (blogs) => blogs.reduce((sum, item) => sum + item.likes, 0);
+module.exports = { dummy, totalLikes };
