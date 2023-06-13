@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
-    "test": "jest --verbose",
+    "start": "cross-env  NODE_ENV=production node index.js",
+    "dev": "cross-env  NODE_ENV=development nodemon index.js",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand",
     "lint": "eslint ."
   },
   "author": "Riza",
@@ -20,7 +20,9 @@
   },
   "devDependencies": {
     "jest": "29.5.0",
-    "nodemon": "2.0.20"
+    "nodemon": "2.0.20",
+    "cross-env": "7.0.3",
+    "supertest": "6.3.3"
   },
   "jest": {
     "testEnvironment": "node"
