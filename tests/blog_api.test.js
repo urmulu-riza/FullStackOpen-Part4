@@ -1,35 +1,14 @@
 const supertest = require('supertest');
 const mongoose = require('mongoose');
+const helper = require('./test_helper');
 const app = require('../app');
 const api = supertest(app);
 
 const Blog = require('../models/blog');
 
-const initialBlogs = [
-  {
-    _id: '5a422a851b54a676234d17f7',
-    title: 'React patterns',
-    author: 'Michael Chan',
-    url: 'https://reactpatterns.com/',
-    likes: 7,
-    __v: 0,
-  },
-  {
-    _id: '5a422aa71b54a676234d17f8',
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 5,
-    __v: 0,
-  },
-];
-
 beforeEach(async () => {
   await Blog.deleteMany({});
-  let blogObject = new Blog(initialBlogs[0]);
-  await blogObject.save();
-  blogObject = new Blog(initialBlogs[1]);
-  await blogObject.save();
+  await Blog.insertMany(helper.initialBlogs);
 }, 40000);
 
 describe('GET/blogs', () => {
@@ -42,7 +21,7 @@ describe('GET/blogs', () => {
 
   test('get all blogs', async () => {
     const response = await api.get('/api/blogs');
-    expect(response.body).toHaveLength(initialBlogs.length);
+    expect(response.body).toHaveLength(helper.initialBlogs.length);
   }, 20000);
 
   test('the blog titles list contains  "REACT patterns"', async () => {
@@ -62,7 +41,7 @@ describe('GET/blogs', () => {
 });
 
 describe('HTTP POST request to  /api/blogs', () => {
-  test('a valid new blog is added to DB', async () => {
+  test('a valid new blog can be added to DB', async () => {
     const newBlog = {
       title: 'Learn Modern Web Dev - MOOC',
       author: 'Urmulu Riza',
@@ -76,9 +55,10 @@ describe('HTTP POST request to  /api/blogs', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
-    const response = await api.get('/api/blogs');
-    const titles = response.body.map((r) => r.title);
-    expect(response.body).toHaveLength(initialBlogs.length + 1);
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+
+    const titles = blogsAtEnd.map((r) => r.title);
     expect(titles).toContain('Learn Modern Web Dev - MOOC');
   });
 
@@ -95,9 +75,9 @@ describe('HTTP POST request to  /api/blogs', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
-    const response = await api.get('/api/blogs');
-    const likes = response.body.map((r) => r.likes);
-    expect(response.body).toHaveLength(initialBlogs.length + 1);
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
+    const likes = blogsAtEnd.map((r) => r.likes);
     expect(likes[likes.length - 1]).toBe(0);
   });
 
@@ -107,8 +87,8 @@ describe('HTTP POST request to  /api/blogs', () => {
     };
 
     await api.post('/api/blogs').send(newBlog).expect(400);
-    const response = await api.get('/api/blogs');
-    expect(response.body).toHaveLength(initialBlogs.length);
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
   });
 });
 
