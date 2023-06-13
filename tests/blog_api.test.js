@@ -64,7 +64,7 @@ describe('GET/blogs', () => {
 });
 
 describe('HTTP POST request to  /api/blogs', () => {
-  test('a valid new blog is added to DB', async () => {
+  test.only('a valid new blog is added to DB', async () => {
     const newBlog = {
       title: 'Learn Modern Web Dev - MOOC',
       author: 'Urmulu Riza',

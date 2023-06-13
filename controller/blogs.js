@@ -14,7 +14,7 @@ blogsRouter.get('/:id', async (request, response, next) => {
   blog ? response.json(blog) : response.status(404).end();
 });
 
-blogsRouter.post('/', (request, response, next) => {
+blogsRouter.post('/', async (request, response, next) => {
   const { title, url, likes, author } = request.body;
 
   const blog = new Blog({
@@ -23,13 +23,17 @@ blogsRouter.post('/', (request, response, next) => {
     url,
     likes,
   });
-
-  blog
-    .save()
-    .then((savedBlog) => {
-      response.status(201).json(savedBlog);
-    })
-    .catch((error) => next(error));
+  if (!(blog.title && blog.author && blog.url)) {
+    response
+      .status(400)
+      .json({ error: 'title, author, and url are required' })
+      .end();
+  }
+  if (!blog.likes) {
+    blog.likes = 0;
+  }
+  const savedBlog = await blog.save();
+  response.status(201).json(savedBlog);
 });
 
 blogsRouter.delete('/:id', (request, response, next) => {
