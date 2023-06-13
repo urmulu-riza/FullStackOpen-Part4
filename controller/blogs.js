@@ -8,7 +8,7 @@ blogsRouter.get('/', async (request, response) => {
 
 blogsRouter.get('/:id', async (request, response, next) => {
   if (request.params.id.length !== 24) {
-    response.status(400).json({ error: 'invalid id' }).end();
+    return response.status(400).json({ error: 'invalid id' }).end();
   }
   const blog = await Blog.findById(request.params.id);
   blog ? response.json(blog) : response.status(404).end();
@@ -24,7 +24,7 @@ blogsRouter.post('/', async (request, response, next) => {
     likes,
   });
   if (!(blog.title && blog.author && blog.url)) {
-    response
+    return response
       .status(400)
       .json({ error: 'title, author, and url are required' })
       .end();

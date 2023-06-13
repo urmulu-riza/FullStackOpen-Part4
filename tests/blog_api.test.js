@@ -1,11 +1,9 @@
-const mongoose = require('mongoose');
 const supertest = require('supertest');
+const mongoose = require('mongoose');
 const app = require('../app');
-
 const api = supertest(app);
 
 const Blog = require('../models/blog');
-const { response } = require('express');
 
 const initialBlogs = [
   {
@@ -109,6 +107,8 @@ describe('HTTP POST request to  /api/blogs', () => {
     };
 
     await api.post('/api/blogs').send(newBlog).expect(400);
+    const response = await api.get('/api/blogs');
+    expect(response.body).toHaveLength(initialBlogs.length);
   });
 });
 
