@@ -68,7 +68,7 @@ describe('HTTP POST request to  /api/blogs', () => {
     const newBlog = {
       title: 'Learn Modern Web Dev - MOOC',
       author: 'Urmulu Riza',
-      url: 'https://example2.com',
+      url: 'https://www.fullstackopen.com',
       likes: 15,
     };
 
@@ -82,6 +82,25 @@ describe('HTTP POST request to  /api/blogs', () => {
     const titles = response.body.map((r) => r.title);
     expect(response.body).toHaveLength(initialBlogs.length + 1);
     expect(titles).toContain('Learn Modern Web Dev - MOOC');
+  });
+
+  test.only("if the likes property doesn't exist, likes defaults to zero", async () => {
+    const newBlog = {
+      title: 'Learn Modern Web Dev - MOOC',
+      author: 'Urmulu Riza',
+      url: 'https://www.fullstackopen.com',
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const response = await api.get('/api/blogs');
+    const likes = response.body.map((r) => r.likes);
+    expect(response.body).toHaveLength(initialBlogs.length + 1);
+    expect(likes[likes.length - 1]).toBe(0);
   });
 });
 
