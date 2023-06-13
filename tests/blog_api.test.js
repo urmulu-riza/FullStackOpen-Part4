@@ -5,6 +5,7 @@ const app = require('../app');
 const api = supertest(app);
 
 const Blog = require('../models/blog');
+const { response } = require('express');
 
 const initialBlogs = [
   {
@@ -52,13 +53,35 @@ describe('GET/blogs', () => {
     expect(titles).toContain('React patterns');
   }, 20000);
 
-  test('unique identifier property is named _id and exists', async () => {
+  test('unique identifier property is named id and exists', async () => {
     const response = await api
       .get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/);
 
     expect(response.body[0].id).toBeDefined();
+  });
+});
+
+describe('HTTP POST request to  /api/blogs', () => {
+  test('a valid new blog is added to DB', async () => {
+    const newBlog = {
+      title: 'Learn Modern Web Dev - MOOC',
+      author: 'Urmulu Riza',
+      url: 'https://example2.com',
+      likes: 15,
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const response = await api.get('/api/blogs');
+    const titles = response.body.map((r) => r.title);
+    expect(response.body).toHaveLength(initialBlogs.length + 1);
+    expect(titles).toContain('Learn Modern Web Dev - MOOC');
   });
 });
 
