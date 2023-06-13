@@ -64,7 +64,7 @@ describe('GET/blogs', () => {
 });
 
 describe('HTTP POST request to  /api/blogs', () => {
-  test.only('a valid new blog is added to DB', async () => {
+  test('a valid new blog is added to DB', async () => {
     const newBlog = {
       title: 'Learn Modern Web Dev - MOOC',
       author: 'Urmulu Riza',
@@ -84,7 +84,7 @@ describe('HTTP POST request to  /api/blogs', () => {
     expect(titles).toContain('Learn Modern Web Dev - MOOC');
   });
 
-  test.only("if the likes property doesn't exist, likes defaults to zero", async () => {
+  test("if the likes property doesn't exist, likes defaults to zero", async () => {
     const newBlog = {
       title: 'Learn Modern Web Dev - MOOC',
       author: 'Urmulu Riza',
@@ -101,6 +101,14 @@ describe('HTTP POST request to  /api/blogs', () => {
     const likes = response.body.map((r) => r.likes);
     expect(response.body).toHaveLength(initialBlogs.length + 1);
     expect(likes[likes.length - 1]).toBe(0);
+  });
+
+  test('if the title or url properties are missing from the request data, the backend responds with the status code 400 Bad Request', async () => {
+    const newBlog = {
+      author: 'Urmulu Riza',
+    };
+
+    await api.post('/api/blogs').send(newBlog).expect(400);
   });
 });
 
