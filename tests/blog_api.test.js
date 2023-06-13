@@ -31,25 +31,36 @@ beforeEach(async () => {
   await blogObject.save();
   blogObject = new Blog(initialBlogs[1]);
   await blogObject.save();
-}, 20000);
+}, 40000);
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
-}, 20000);
+describe('GET/blogs', () => {
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+  }, 20000);
 
-test('there are two blogs', async () => {
-  const response = await api.get('/api/blogs');
-  expect(response.body).toHaveLength(initialBlogs.length);
-}, 20000);
+  test('get all blogs', async () => {
+    const response = await api.get('/api/blogs');
+    expect(response.body).toHaveLength(initialBlogs.length);
+  }, 20000);
 
-test('the first blog is about REACT patterns', async () => {
-  const response = await api.get('/api/blogs');
-  const titles = response.body.map((r) => r.title);
-  expect(titles).toContain('React patterns');
-}, 20000);
+  test('the blog titles list contains  "REACT patterns"', async () => {
+    const response = await api.get('/api/blogs');
+    const titles = response.body.map((r) => r.title);
+    expect(titles).toContain('React patterns');
+  }, 20000);
+
+  test('unique identifier property is named _id and exists', async () => {
+    const response = await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body[0].id).toBeDefined();
+  });
+});
 
 afterAll(async () => {
   await mongoose.connection.close();
