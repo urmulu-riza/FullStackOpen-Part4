@@ -137,3 +137,23 @@ describe('HTTP DELETE /api/blogs/:id', () => {
     expect(titles).not.toContain('React patterns');
   });
 });
+
+//PUT
+describe('HTTP PUT /api/blogs/:id', () => {
+  test('updates the likes', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+    const updatedBlog = {
+      ...blogToUpdate,
+      likes: 20,
+    };
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(200);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd[0].likes).toBe(20);
+  });
+});
