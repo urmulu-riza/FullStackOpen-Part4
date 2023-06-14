@@ -96,3 +96,30 @@ describe('HTTP POST request to  /api/blogs', () => {
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
   });
 });
+
+//GET /api/blogs/:id
+describe('HTTP GET /api/blogs/:id', () => {
+  test('returns the correct blog', async () => {
+    const blogs = await helper.blogsInDb();
+    const blog = blogs[0];
+
+    const resultBlog = await api
+      .get(`/api/blogs/${blog.id}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(resultBlog.body).toEqual(blog);
+  });
+
+  test('If blog does not exist, fails with the status code 404 ', async () => {
+    const validNonexistingId = await helper.nonExistingId();
+    await api.get(`/api/blogs/${validNonexistingId}`).expect(404);
+  });
+
+  test('If id is invalid, fails with the status code 400', async () => {
+    const invalidId = 'a422b3a1b54a676234d17f9';
+    const response = await api.get(`/api/blogs/${invalidId}`);
+    expect(response.statusCode).toEqual(400);
+    expect(response.body.error).toContain('invalid id');
+  });
+});
