@@ -10,8 +10,12 @@ beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
 }, 40000);
+afterAll(async () => {
+  await mongoose.connection.close();
+}, 20000);
 
-describe('GET/blogs', () => {
+// GET /blogs
+describe('GET /api/blogs', () => {
   test('blogs are returned as json', async () => {
     await api
       .get('/api/blogs')
@@ -40,6 +44,7 @@ describe('GET/blogs', () => {
   });
 });
 
+// POST /blogs
 describe('HTTP POST request to  /api/blogs', () => {
   test('a valid new blog can be added to DB', async () => {
     const newBlog = {
@@ -91,7 +96,3 @@ describe('HTTP POST request to  /api/blogs', () => {
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
   });
 });
-
-afterAll(async () => {
-  await mongoose.connection.close();
-}, 20000);

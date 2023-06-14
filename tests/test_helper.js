@@ -59,7 +59,7 @@ const nonExistingId = async () => {
     likes: 1,
   });
   await blog.save();
-  await blog.remove();
+  await blog.deleteOne();
 
   return blog._id.toString();
 };
