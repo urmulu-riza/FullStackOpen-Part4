@@ -55,6 +55,44 @@ describe('when there is initially one user in db', () => {
     const usersAtEnd = await helper.usersInDb();
     expect(usersAtEnd).toEqual(usersAtStart);
   });
+
+  test('creation fails with proper status code and message if username is less than 3 characters long', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: 'ro',
+      name: 'Savalan',
+      password: 'gizli',
+    };
+
+    const result = await api.post('/api/users').send(newUser).expect(400);
+
+    expect(result.body.error).toContain(
+      'Username must be at least 3 characters long'
+    );
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toEqual(usersAtStart);
+  });
+
+  test('creation fails with proper status code and message if password is less than 3 characters long', async () => {
+    const usersAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: 'roo',
+      name: 'Savalan',
+      password: 'no',
+    };
+
+    const result = await api.post('/api/users').send(newUser).expect(400);
+
+    expect(result.body.error).toContain(
+      'Password must be at least 3 characters long'
+    );
+
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toEqual(usersAtStart);
+  });
 });
 
 afterAll(async () => {
