@@ -5,14 +5,39 @@ const app = require('../app');
 const api = supertest(app);
 
 const Blog = require('../models/blog');
+const User = require('../models/user');
+const bcrypt = require('bcrypt');
+let token, id;
 
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
+
+  await User.deleteMany({});
+  const passwordHash = bcrypt.hashSync('sifre', 10);
+  const user = new User({
+    username: 'rizam',
+    passwordHash,
+  });
+  await user.save();
 }, 40000);
+
 afterAll(async () => {
   await mongoose.connection.close();
 }, 20000);
+
+//Login
+describe('HTTP POST /login', () => {
+  test('authenticate user', async () => {
+    const user = {
+      username: 'rizam',
+      password: 'sifre',
+    };
+
+    const response = await api.post('/api/login').send(user).expect(201);
+    token = response.body.token;
+  });
+});
 
 // GET /blogs
 describe('GET /api/blogs', () => {
@@ -54,9 +79,18 @@ describe('HTTP POST request to  /api/blogs', () => {
       likes: 15,
     };
 
+    const response = await api
+      .post('/api/login')
+      .send({
+        username: 'rizam',
+        password: 'sifre',
+      })
+      .expect(201);
+
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `Bearer ${response.body.token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -65,7 +99,7 @@ describe('HTTP POST request to  /api/blogs', () => {
 
     const titles = blogsAtEnd.map((r) => r.title);
     expect(titles).toContain('Learn Modern Web Dev - MOOC');
-  });
+  }, 20000);
 
   test("if the likes property doesn't exist, likes defaults to zero", async () => {
     const newBlog = {
@@ -73,10 +107,17 @@ describe('HTTP POST request to  /api/blogs', () => {
       author: 'Urmulu Riza',
       url: 'https://www.fullstackopen.com',
     };
-
+    const response = await api
+      .post('/api/login')
+      .send({
+        username: 'rizam',
+        password: 'sifre',
+      })
+      .expect(201);
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `Bearer ${response.body.token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
@@ -90,8 +131,18 @@ describe('HTTP POST request to  /api/blogs', () => {
     const newBlog = {
       author: 'Urmulu Riza',
     };
-
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    const response = await api
+      .post('/api/login')
+      .send({
+        username: 'rizam',
+        password: 'sifre',
+      })
+      .expect(201);
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${response.body.token}`)
+      .expect(400);
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length);
   });
@@ -127,14 +178,37 @@ describe('HTTP GET /api/blogs/:id', () => {
 //Delete
 describe('HTTP DELETE /api/blogs/:id', () => {
   test('a blog can be deleted', async () => {
-    const blogsAtStart = await helper.blogsInDb();
-    const blogToDelete = blogsAtStart[0];
+    const newBlog = {
+      title: 'blog to delete',
+      author: 'Urmulu Riza',
+      url: 'https://www.fullstackopen.com/',
+      likes: 15,
+    };
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    const response = await api
+      .post('/api/login')
+      .send({
+        username: 'rizam',
+        password: 'sifre',
+      })
+      .expect(201);
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', `Bearer ${response.body.token}`)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[blogsAtStart.length - 1];
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${response.body.token}`)
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
     const titles = blogsAtEnd.map((b) => b.title);
-    expect(titles).not.toContain('React patterns');
+    expect(titles).not.toContain('blog to delete');
   });
 });
 
