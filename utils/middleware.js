@@ -30,7 +30,7 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
-const tokenExtractor = async (request, response, next) => {
+const userExtractor = async (request, response, next) => {
   const authorization = request.get('authorization');
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     const decodedToken = jwt.verify(
@@ -54,5 +54,5 @@ module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
-  tokenExtractor,
+  userExtractor,
 };

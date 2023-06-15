@@ -16,6 +16,5 @@ Content-Type: application/json
 
 {
     "username":"rizaman",
-    "password":"rizaman",
-"token":"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJpemFtYW4iLCJpZCI6IjY0OGE4ZmEwOTJhMTI1YzdiMDEyMmY5ZSIsImlhdCI6MTY4NjgxNjA4NSwiZXhwIjoxNjg2ODE5Njg1fQ.yf-3ttIMq8K6PxbXIFv3nLOyO65JnU2rEB7HOuOt9Q8"
+    "password":"rizaman"
 }
