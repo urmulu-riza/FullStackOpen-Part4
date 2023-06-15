@@ -6,7 +6,7 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs);
 });
 
-blogsRouter.get('/:id', async (request, response, next) => {
+blogsRouter.get('/:id', async (request, response) => {
   if (request.params.id.length !== 24) {
     return response.status(400).json({ error: 'invalid id' }).end();
   }
@@ -14,7 +14,7 @@ blogsRouter.get('/:id', async (request, response, next) => {
   blog ? response.json(blog) : response.status(404).end();
 });
 
-blogsRouter.post('/', async (request, response, next) => {
+blogsRouter.post('/', async (request, response) => {
   const { title, url, likes, author } = request.body;
 
   const blog = new Blog({
@@ -36,12 +36,12 @@ blogsRouter.post('/', async (request, response, next) => {
   response.status(201).json(savedBlog);
 });
 
-blogsRouter.delete('/:id', async (request, response, next) => {
+blogsRouter.delete('/:id', async (request, response) => {
   const blog = await Blog.findByIdAndRemove(request.params.id);
   response.status(204).end();
 });
 
-blogsRouter.put('/:id', async (request, response, next) => {
+blogsRouter.put('/:id', async (request, response) => {
   const { title, author, url, likes } = request.body;
 
   const blog = { title, author, url, likes };

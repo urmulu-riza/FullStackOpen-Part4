@@ -9,3 +9,12 @@ Content-Type: application/json
     "url":"asdasd.asd/sadas/da/sd/asd"
 
 }
+###
+POST http://localhost:3001/api/users
+Content-Type: application/json
+
+{
+    "username":"rizaman",
+    "name":"rizaman",
+    "password":"rizaman"
+}
