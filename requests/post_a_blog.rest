@@ -18,3 +18,15 @@ Content-Type: application/json
     "name":"rizaman",
     "password":"rizaman"
 }
+###
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+    "title":"Alpsd5Afrdfslan",
+    "likes":2,
+    "author":"rdfa",
+    "url":"sd.asd/sadas/da/sd/asd",
+    "userId":"648a8fa092a125c7b0122f9e"
+
+}
